@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace GAmerico.EntityFrameworkCore.ChangeTracker
 {
@@ -16,7 +17,7 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
       EventId = eventId;
       EventName = eventName;
       Entity = entity;
-      Properties = properties ?? new PropertyChanged[0];
+      Properties = (properties ?? new PropertyChanged[0]).ToArray();
     }
 
     /// <summary>Gets the entity.</summary>
@@ -34,5 +35,9 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
     /// <summary>Gets the properties.</summary>
     /// <value>The properties. </value>
     public IEnumerable<PropertyChanged> Properties { get; }
+
+    /// <summary>Returns a <see cref="System.String" /> that represents this instance.</summary>
+    /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+    public override string ToString() => $"{typeof(T).Name} was {EventName}";
   }
 }

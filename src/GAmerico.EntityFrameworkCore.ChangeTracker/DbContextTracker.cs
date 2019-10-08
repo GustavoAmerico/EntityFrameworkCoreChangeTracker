@@ -2,18 +2,24 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace GAmerico.EntityFrameworkCore.ChangeTracker
 {
   public class DbContextTracker : DbContext
   {
-    public DbContextTracker(DbContextOptions options) : base(options)
+    private IEnumerable<IEntityTracker> _observers;
+
+
+    public DbContextTracker(DbContextOptions options, IEnumerable<IEntityTracker> observers) : base(options)
     {
+      _observers = observers;
     }
 
-    protected DbContextTracker() : base()
+    protected DbContextTracker(IEnumerable<IEntityTracker> observers) : base()
     {
+      _observers = observers;
     }
 
     /// <summary>Saves all changes made in this context to the database.</summary>
@@ -24,21 +30,20 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
     /// </remarks>
     public override int SaveChanges()
     {
-      var trackers = this.GetInfrastructure()
-        .GetServices<IEntityTracker>()
-        .ToArray();
-
       try
       {
-        trackers.BeginTrack(this.ChangeTracker);
+        _observers?.BeginTrack(this.ChangeTracker);
         var result = base.SaveChanges();
-        trackers.Commit();
+        _observers?.Commit();
         return result;
       }
       catch (Exception e)
       {
-        foreach (var entityTracker in trackers)
-          entityTracker.NotifyError(e);
+        if (!ReferenceEquals(null, _observers))
+        {
+          foreach (var entityTracker in _observers)
+            entityTracker.NotifyError(e);
+        }
         throw;
       }
     }

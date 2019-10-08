@@ -93,9 +93,7 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
 
     private static string GetPropertyName(Expression<Func<TEntity, object>> exp)
     {
-      var body = exp.Body as MemberExpression;
-
-      if (body != null) return body?.Member?.Name;
+      if (exp.Body is MemberExpression body) return body?.Member?.Name;
       var ubody = (UnaryExpression)exp.Body;
       body = ubody.Operand as MemberExpression;
       return body?.Member?.Name;
@@ -117,5 +115,5 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
         _observers.Remove(_observer);
       }
     }
-  } 
+  }
 }

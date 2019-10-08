@@ -32,7 +32,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking
     public static IEnumerable<PropertyChanged> SelectPropertiesChanged(this EntityEntry entry, ICollection<string> properties)
     {
       return from entryProperty in entry.Properties.Where(a => a.IsModified)
-             where !properties.Any() || properties.Contains(entryProperty.Metadata.Name)
+             where (!properties.Any() || properties.Contains(entryProperty.Metadata.Name)) && (entryProperty.CurrentValue != entryProperty.OriginalValue)
              select new PropertyChanged(entryProperty.Metadata.Name, entryProperty.CurrentValue, entryProperty.OriginalValue);
     }
   }

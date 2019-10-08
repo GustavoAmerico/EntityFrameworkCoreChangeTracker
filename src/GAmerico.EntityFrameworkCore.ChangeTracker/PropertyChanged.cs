@@ -31,5 +31,13 @@
     {
       return new PropertyChanged(value.PropertyName, value.OldValue, value.NewValue);
     }
+
+
+    /// <summary>Returns a <see cref="System.String" /> that represents this instance.</summary>
+    /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+    public override string ToString()
+    {
+      return $"{PropertyName} change from {OldValue} to {NewValue}";
+    }
   }
 }
