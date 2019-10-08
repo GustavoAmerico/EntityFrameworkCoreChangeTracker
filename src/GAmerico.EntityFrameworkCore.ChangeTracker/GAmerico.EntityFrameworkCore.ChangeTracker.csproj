@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Gustavo Américo</Authors>
+    <Company>GAG .LTDA</Company>
+    <Product>EntityFrameworkCore.ChangeTracker</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>This package adds objects to track changes made to certain types of objects. The goal is to identify the properties that have changed on each object attached to DBContext.</Description>
+    <Version>0.0.1-beta01</Version>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <Copyright>@Gustavo Américo</Copyright>
+    <PackageTags>entityframework;tracker;log</PackageTags>
+    <RepositoryUrl>https://github.com/GustavoAmerico/EntityFrameworkCoreChangeTracker</RepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\GAmerico.EntityFrameworkCore.ChangeTracker.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
+  </ItemGroup>
+
+</Project>
