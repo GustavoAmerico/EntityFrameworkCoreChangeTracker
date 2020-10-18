@@ -30,6 +30,20 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
             }
         }
 
+        /// <summary>Initializes a new instance of the <see cref="ObjectChanged{T}"/> class.</summary>
+        /// <param name="eventId">The event identifier.</param>
+        /// <param name="eventName">Name of the event.</param>
+        /// <param name="entity">The entity.</param>
+        /// <param name="properties">The properties.</param>
+        public ObjectChanged(int eventId, string eventName, T entity, IReadOnlyCollection<PropertyChanged> properties)
+        {
+            EventId = eventId;
+            EventName = eventName;
+            Entity = entity;
+            Properties = properties ?? new PropertyChanged[0];
+        }
+
+
         /// <summary>Gets the entity.</summary>
         /// <value>The entity.</value>
         public T Entity { get; }
@@ -44,7 +58,7 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
 
         /// <summary>Gets the properties.</summary>
         /// <value>The properties. </value>
-        public IEnumerable<PropertyChanged> Properties { get; }
+        public IReadOnlyCollection<PropertyChanged> Properties { get; }
 
         /// <summary>Returns a <see cref="System.String" /> that represents this instance.</summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
