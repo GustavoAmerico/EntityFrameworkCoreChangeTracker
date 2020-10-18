@@ -12,7 +12,7 @@ pool:
 
 name: 1.1.$(Build.BuildId)
 variables:
-  version: 0.0.1.$(Build.BuildId)
+  version: 1.1.1.$(Build.BuildId)
  
 stages:
   - stage: Continous_Integration
