@@ -42,7 +42,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking
             list.AddRange(from entryProperty in entry.Properties.Where(a => a.IsModified)
                           where (!properties.Any() || properties.Contains(entryProperty.Metadata.Name, StringComparer.CurrentCultureIgnoreCase))
                                 && (!EqualityComparer<object>.Default.Equals(entryProperty.CurrentValue, entryProperty.OriginalValue))
-                          select new PropertyChanged(entryProperty.Metadata.Name, entryProperty.CurrentValue, entryProperty.OriginalValue));
+                          select new PropertyChanged(entryProperty.Metadata.Name, entryProperty.OriginalValue, entryProperty.CurrentValue));
             return list;
         }
     }
