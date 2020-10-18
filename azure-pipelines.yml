@@ -1,0 +1,49 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+
+name: 1.1.$(Build.BuildId)
+variables:
+  version: 0.0.1.$(Build.BuildId)
+ 
+stages:
+  - stage: Continous_Integration
+    displayName: Integração continua
+    jobs:
+      - job: Build
+        variables:
+          solution: src
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: dotnet build
+            inputs:
+              projects: $(solution)
+              arguments: '/p:Version=$(version) /p:PackageVersion=$(version)'
+
+          - task: DotNetCoreCLI@2
+            displayName: dotnet pack
+            inputs:
+              command: pack
+              packagesToPack: $(solution)
+              versioningScheme: 'Off'
+              packDirectory: '$(Build.ArtifactStagingDirectory)/artifact'
+              buildProperties: 'PackageVersion=$(version)'
+              verbosityPack: Normal
+              includesymbols: true
+              includesource: true
+              
+            
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Artifact'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: artifact
+              
