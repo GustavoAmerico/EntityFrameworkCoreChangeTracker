@@ -16,14 +16,20 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking
         /// <param name="entries">The entries.</param>
         /// <param name="properties">The properties.</param>
         /// <returns></returns>
-        public static IEnumerable<ObjectChanged<T>> SelectObjectsChanged<T>(this ChangeTracker entries, ICollection<string> properties) where T : class
+        public static IReadOnlyCollection<ObjectChanged<T>> SelectObjectsChanged<T>(this ChangeTracker entries, ICollection<string> properties) where T : class
         {
-            if (entries?.HasChanges() != true) yield break;
+            var itens = new List<ObjectChanged<T>>();
+            if (entries?.HasChanges() != true) return itens;
             foreach (var entry in entries.Entries<T>().Where(e => !IgnoreStates.Contains(e.State)))
             {
                 var propertiesChanged = entry.SelectPropertiesChanged(properties);
-                yield return new ObjectChanged<T>(((int)entry.State), entry.State.ToString(), entry.Entity, propertiesChanged);
+                if (!propertiesChanged.Any())
+                    continue;
+                var oc = new ObjectChanged<T>(((int)entry.State), entry.State.ToString(), entry.Entity, propertiesChanged);
+                itens.Add(oc);
             }
+
+            return itens;
         }
 
         /// <summary>Gets the properties changed for an object</summary>
@@ -35,7 +41,7 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking
 
             list.AddRange(from entryProperty in entry.Properties.Where(a => a.IsModified)
                           where (!properties.Any() || properties.Contains(entryProperty.Metadata.Name, StringComparer.CurrentCultureIgnoreCase))
-                                && (EqualityComparer<object>.Default.Equals(entryProperty.CurrentValue, entryProperty.OriginalValue))
+                                && (!EqualityComparer<object>.Default.Equals(entryProperty.CurrentValue, entryProperty.OriginalValue))
                           select new PropertyChanged(entryProperty.Metadata.Name, entryProperty.CurrentValue, entryProperty.OriginalValue));
             return list;
         }
