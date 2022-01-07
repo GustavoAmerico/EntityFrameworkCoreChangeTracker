@@ -1,11 +1,10 @@
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace GAmerico.EntityFrameworkCore.ChangeTracker.UnitTest;
 
 public class Database : DbContextTracker
 {
-
     public DbSet<Person> People { get; set; }
 
     public Database(DbContextOptions options, IEnumerable<IEntityTracker> observers) : base(options, observers)

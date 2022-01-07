@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
 
 namespace GAmerico.EntityFrameworkCore.ChangeTracker
 {
@@ -43,7 +42,6 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
         {
             return new PropertyChanged(value.PropertyName, value.OldValue, value.NewValue);
         }
-
 
         /// <summary>Returns a <see cref="System.String" /> that represents this instance.</summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>

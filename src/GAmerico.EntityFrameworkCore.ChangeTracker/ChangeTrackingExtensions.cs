@@ -37,13 +37,30 @@ namespace Microsoft.EntityFrameworkCore.ChangeTracking
         /// <param name="properties">The properties for filters.</param>
         public static IReadOnlyCollection<PropertyChanged> SelectPropertiesChanged(this EntityEntry entry, ICollection<string> properties)
         {
-            var list = new List<PropertyChanged>(properties.Count);
+            var propertiesToLogger = entry
+                .Properties
+                .ToList();
 
-            list.AddRange(from entryProperty in entry.Properties.Where(a => a.IsModified)
-                          where (!properties.Any() || properties.Contains(entryProperty.Metadata.Name, StringComparer.CurrentCultureIgnoreCase))
-                                && (!EqualityComparer<object>.Default.Equals(entryProperty.CurrentValue, entryProperty.OriginalValue))
-                          select new PropertyChanged(entryProperty.Metadata.Name, entryProperty.OriginalValue, entryProperty.CurrentValue));
-            return list;
+            if (properties.Any())
+            {
+                propertiesToLogger = propertiesToLogger
+                    .Where(prop => properties.Contains(prop.Metadata?.Name, StringComparer.CurrentCultureIgnoreCase))
+                     .ToList();
+            }
+
+            if (entry.State == EntityState.Added || entry.State == EntityState.Deleted)
+            {
+                return propertiesToLogger
+                    .Select(s => new PropertyChanged(s))
+                    .ToList();
+            }
+
+            propertiesToLogger
+              .RemoveAll(entryProperty => EqualityComparer<object>.Default.Equals(entryProperty.CurrentValue, entryProperty.OriginalValue));
+
+            return propertiesToLogger
+                .Select(entryProperty => new PropertyChanged(entryProperty))
+                .ToList();
         }
     }
 }

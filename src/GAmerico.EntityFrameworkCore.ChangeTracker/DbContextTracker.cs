@@ -15,6 +15,7 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
 
         protected DbContextTracker(IEnumerable<IEntityTracker> observers) : base()
         {
+
             _observers = observers;
         }
 
@@ -24,12 +25,12 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
         /// changes to entity instances before saving to the underlying database. This can be disabled via
         /// <see cref="P:Microsoft.EntityFrameworkCore.ChangeTracking.ChangeTracker.AutoDetectChangesEnabled" />.
         /// </remarks>
-        public override int SaveChanges()
+        public override int SaveChanges(bool acceptAllChangeOnSucess)
         {
             try
             {
                 _observers?.BeginTrack(this.ChangeTracker);
-                var result = base.SaveChanges();
+                var result = base.SaveChanges(acceptAllChangeOnSucess);
                 _observers?.Commit();
                 return result;
             }
@@ -43,5 +44,6 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
                 throw;
             }
         }
+
     }
 }

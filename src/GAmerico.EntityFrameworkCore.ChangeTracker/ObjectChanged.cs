@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace GAmerico.EntityFrameworkCore.ChangeTracker
 {
@@ -42,7 +41,6 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
             Entity = entity;
             Properties = properties ?? new PropertyChanged[0];
         }
-
 
         /// <summary>Gets the entity.</summary>
         /// <value>The entity.</value>
