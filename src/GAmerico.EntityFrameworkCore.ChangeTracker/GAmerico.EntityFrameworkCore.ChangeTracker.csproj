@@ -1,26 +1,31 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
-    <Authors>Gustavo Américo</Authors>
-    <Company>GAG .LTDA</Company>
-    <Product>EntityFrameworkCore.ChangeTracker</Product>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Description>This package adds objects to track changes made to certain types of objects. The goal is to identify the properties that have changed on each object attached to DBContext.</Description>
-    <Version>1.0.0</Version>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/GustavoAmerico/EntityFrameworkCoreChangeTracker/master/license.md</PackageLicenseUrl>
-    <RepositoryType>git</RepositoryType>
-    <Copyright>@Gustavo Américo</Copyright>
-    <PackageTags>entityframework;tracker;log</PackageTags>
-    <RepositoryUrl>https://github.com/GustavoAmerico/EntityFrameworkCoreChangeTracker</RepositoryUrl>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
+		<Authors>Gustavo Américo</Authors>
+		<Company>GAG .LTDA</Company>
+		<Product>EntityFrameworkCore.ChangeTracker</Product>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Description>This package adds objects to track changes made to certain types of objects. The goal is to identify the properties that have changed on each object attached to DBContext.</Description>
+		<Version>1.0.0</Version>
+		<PackageLicenseUrl>https://raw.githubusercontent.com/GustavoAmerico/EntityFrameworkCoreChangeTracker/master/license.md</PackageLicenseUrl>
+		<RepositoryType>git</RepositoryType>
+		<Copyright>@Gustavo Américo</Copyright>
+		<PackageTags>entityframework;tracker;log</PackageTags>
+		<RepositoryUrl>https://github.com/GustavoAmerico/EntityFrameworkCoreChangeTracker</RepositoryUrl>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\GAmerico.EntityFrameworkCore.ChangeTracker.xml</DocumentationFile>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DocumentationFile>bin\GAmerico.EntityFrameworkCore.ChangeTracker.xml</DocumentationFile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0"
+						  Condition="'$(TargetFramework)' == 'net6.0'" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'" >
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.13"/>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0"                  />
+	</ItemGroup>
 
 </Project>

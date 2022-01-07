@@ -10,9 +10,9 @@ pool:
   vmImage: 'windows-latest'
 
 
-name: 1.1.$(Build.BuildId)
+name: 2.0.$(Build.BuildId)
 variables:
-  version: 1.1.1.$(Build.BuildId)
+  version: 2.0.$(Build.BuildId)
  
 stages:
   - stage: Continous_Integration

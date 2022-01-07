@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Remotion.Linq.Utilities;
 
 namespace GAmerico.EntityFrameworkCore.ChangeTracker
 {
@@ -42,7 +41,6 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
             if (!_observers.Any()) return;
             foreach (var objectChanged in changeTracker.SelectObjectsChanged<TEntity>(_properties))
                 _transientItens.Enqueue(objectChanged);
-
         }
 
         /// <summary>Commits the track for all observers</summary>

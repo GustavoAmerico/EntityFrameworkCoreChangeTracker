@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using GAmerico.EntityFrameworkCore.ChangeTracker;
 using System;
 using System.Linq.Expressions;
 
-namespace GAmerico.EntityFrameworkCore.ChangeTracker
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>This class supports the installation of the project lib</summary>
     public static class Startup
