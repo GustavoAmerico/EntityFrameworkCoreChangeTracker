@@ -1,23 +1,26 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace GAmerico.EntityFrameworkCore.ChangeTracker
 {
+
     /// <summary>Type responsible for monitoring a particular entity</summary>
     /// <typeparam name="TEntity">The type of the entity.</typeparam>
-    public class EntityTracker<TEntity> : IEntityTracker, IObservable<ObjectChanged<TEntity>>, IDisposable where TEntity : class
+    public class EntitiesTracker<TEntity> : IEntityTracker,
+        IObservable<IReadOnlyCollection<ObjectChanged<TEntity>>>, IDisposable where TEntity : class
     {
-        private readonly List<IObserver<ObjectChanged<TEntity>>> _observers;
+        private readonly List<IObserver<IReadOnlyCollection<ObjectChanged<TEntity>>>> _observers;
 
         /// <summary>List of properties to monitor</summary>
         private readonly HashSet<string> _properties = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 
-        private readonly Queue<ObjectChanged<TEntity>> _transientItens = new Queue<ObjectChanged<TEntity>>();
+        private readonly Queue<IReadOnlyCollection<ObjectChanged<TEntity>>> _transientItens = new Queue<IReadOnlyCollection<ObjectChanged<TEntity>>>();
 
-        public EntityTracker(IEnumerable<IObserver<ObjectChanged<TEntity>>> observers, params Expression<Func<TEntity, object>>[] properties)
+        public EntitiesTracker(
+            IEnumerable<IObserver<IReadOnlyCollection<ObjectChanged<TEntity>>>> observers, params Expression<Func<TEntity, object>>[] properties)
         {
             _observers = observers.ToList();
             if (!ReferenceEquals(null, properties))
@@ -39,8 +42,10 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
         public void BeginTrack(Microsoft.EntityFrameworkCore.ChangeTracking.ChangeTracker changeTracker)
         {
             if (!_observers.Any()) return;
+            var list = new List<ObjectChanged<TEntity>>(8);
             foreach (var objectChanged in changeTracker.SelectObjectsChanged<TEntity>(_properties))
-                _transientItens.Enqueue(objectChanged);
+                list.Add(objectChanged);
+            _transientItens.Enqueue(list);
         }
 
         /// <summary>Commits the track for all observers</summary>
@@ -62,7 +67,7 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
                         }
                         catch (Exception e)
                         {
-                            e.Data.Add(objectChanged.Entity, objectChanged);
+                            e.Data[typeof(TEntity)?.FullName ?? "TEntity"] = objectChanged;
                             observer.OnError(e);
                         }
                     }
@@ -86,7 +91,7 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
                 observer.OnError(exception);
         }
 
-        public IDisposable Subscribe(IObserver<ObjectChanged<TEntity>> observer)
+        public IDisposable Subscribe(IObserver<IReadOnlyCollection<ObjectChanged<TEntity>>> observer)
         {
             _observers.Add(observer);
             return new UnSubscribe(observer, _observers);
@@ -102,10 +107,12 @@ namespace GAmerico.EntityFrameworkCore.ChangeTracker
 
         private class UnSubscribe : IDisposable
         {
-            private readonly IObserver<ObjectChanged<TEntity>> _observer;
-            private readonly List<IObserver<ObjectChanged<TEntity>>> _observers;
+            private readonly IObserver<IReadOnlyCollection<ObjectChanged<TEntity>>> _observer;
+            private readonly List<IObserver<IReadOnlyCollection<ObjectChanged<TEntity>>>> _observers;
 
-            public UnSubscribe(IObserver<ObjectChanged<TEntity>> observer, List<IObserver<ObjectChanged<TEntity>>> observers)
+            public UnSubscribe(
+                IObserver<IReadOnlyCollection<ObjectChanged<TEntity>>> observer,
+                List<IObserver<IReadOnlyCollection<ObjectChanged<TEntity>>>> observers)
             {
                 _observer = observer;
                 _observers = observers;

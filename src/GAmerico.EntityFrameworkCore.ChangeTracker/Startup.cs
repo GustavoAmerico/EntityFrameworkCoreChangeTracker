@@ -1,5 +1,6 @@
 ﻿using GAmerico.EntityFrameworkCore.ChangeTracker;
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -43,14 +44,31 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<EntityTracker<T>>(p => new EntityTracker<T>(p.GetServices<IObserver<ObjectChanged<T>>>()))
                 .AddScoped<IEntityTracker>(a => a.GetService<EntityTracker<T>>())
                 .AddScoped<IObservable<ObjectChanged<T>>>(a => a.GetService<EntityTracker<T>>())
-                .AddScoped<IObserver<ObjectChanged<T>>, TObserver>();
+                .AddScoped<IObserver<ObjectChanged<T>>, TObserver>(p => p.GetService<TObserver>());
         }
 
         /// <summary>Add an object change tracker for <see cref="T"/></summary>
         /// <typeparam name="T">Object type for track</typeparam>
         /// <param name="services">The services.</param>
         /// <param name="properties">The properties.</param>
-        public static IServiceCollection AddEntityFrameworkTracker<T>(this IServiceCollection services, Func<IServiceProvider, IObserver<ObjectChanged<T>>> creator) where T : class
+        public static IServiceCollection AddEntityFrameworkTrackerChanges<T, TObserver>(this IServiceCollection services)
+            where T : class
+            where TObserver : class, IObserver<IReadOnlyCollection<ObjectChanged<T>>>
+        {
+            return services
+                .AddScoped<EntityTracker<T>>(p => new EntityTracker<T>(p.GetServices<IObserver<ObjectChanged<T>>>()))
+                .AddScoped<IEntityTracker>(a => a.GetService<EntityTracker<T>>())
+                .AddScoped<IObservable<IReadOnlyCollection<ObjectChanged<T>>>>(a => a.GetService<EntitiesTracker<T>>())
+                .AddScoped<IObserver<IReadOnlyCollection<ObjectChanged<T>>>, TObserver>(p => p.GetService<TObserver>());
+        }
+
+        /// <summary>Add an object change tracker for <see cref="T"/></summary>
+        /// <typeparam name="T">Object type for track</typeparam>
+        /// <param name="services">The services.</param>
+        /// <param name="properties">The properties.</param>
+        public static IServiceCollection AddEntityFrameworkTracker<T>(this IServiceCollection services,
+            Func<IServiceProvider, IObserver<ObjectChanged<T>>> creator)
+            where T : class
         {
             return services
                 .AddScoped<EntityTracker<T>>(p => new EntityTracker<T>(p.GetServices<IObserver<ObjectChanged<T>>>()))
@@ -58,6 +76,23 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<IObservable<ObjectChanged<T>>>(a => a.GetService<EntityTracker<T>>())
                 .AddScoped<IObserver<ObjectChanged<T>>>(creator);
         }
+
+        /// <summary>Add an object change tracker for <see cref="T"/></summary>
+        /// <typeparam name="T">Object type for track</typeparam>
+        /// <param name="services">The services.</param>
+        /// <param name="properties">The properties.</param>
+        public static IServiceCollection AddEntityFrameworkTracker<T>(
+            this IServiceCollection services,
+            Func<IServiceProvider, IObserver<IReadOnlyCollection<ObjectChanged<T>>>> creator) where T : class
+        {
+            return services
+                .AddScoped<EntityTracker<T>>(p => new EntityTracker<T>(p.GetServices<IObserver<ObjectChanged<T>>>()))
+                .AddScoped<IEntityTracker>(a => a.GetService<EntityTracker<T>>())
+                .AddScoped<IObservable<ObjectChanged<T>>>(a => a.GetService<EntityTracker<T>>())
+                .AddScoped<IObserver<IReadOnlyCollection<ObjectChanged<T>>>>(creator);
+        }
+
+
 
         /// <summary>Adds the track observer on DI.</summary>
         /// <param name="services">The services.</param>
