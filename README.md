@@ -3,6 +3,7 @@
 This package adds objects to track changes made to certain types of objects. The goal is to identify the properties that have changed on each object attached to DBContext.
 
 
+
 # How do I use
 
 ```CSharp
@@ -48,3 +49,8 @@ This package adds objects to track changes made to certain types of objects. The
     }
 
 ```
+
+## What's new
+
+10.*
+    - Suport for .NET 10.0 and .NET 8.0
