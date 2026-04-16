@@ -20,7 +20,8 @@ stages:
     jobs:
       - job: Build
         variables:
-          solution: src
+          SolutionPath: src
+          Solution: EntityFrameworkCoreChangeTracker.sln
         steps:
           - task: UseDotNet@2
             displayName: Instalando o .NET 10
@@ -29,28 +30,18 @@ stages:
               packageType: sdk
               installationPath: $(Agent.ToolsDirectory)/dotnet
 
-          - task: DotNetCoreCLI@2
-            displayName: Compilando os pacotes a serem publicados
+          - task: PowerShell@2
+            displayName: Criando pacote com as bibliotecas
             inputs:
-              projects: $(solution)
-              arguments: '/p:Version=$(version) /p:PackageVersion=$(version)'
+              targetType: 'inline'
+              script: 'dotnet build $(solution) --no-incremental -c Release; dotnet pack $(solution) /p:Version=$(version) /p:PackageVersion=$(version) --include-symbols --include-source -c Release -o $(Build.StagingDirectory)/artifact/'
+              pwsh: true
+              workingDirectory: '$(SolutionPath)'
 
-          - task: DotNetCoreCLI@2
-            displayName: dotnet pack
-            inputs:
-              command: pack
-              packagesToPack: $(solution)
-              versioningScheme: 'Off'
-              packDirectory: '$(Build.ArtifactStagingDirectory)/artifact'
-              buildProperties: 'PackageVersion=$(version)'
-              verbosityPack: Normal
-              includesymbols: true
-              includesource: true
-              
-            
           - task: PublishBuildArtifacts@1
-            displayName: 'Publish Artifact'
+            displayName: "Publicando os artefatos no AzureDevOps"
+            condition: and(succeeded(),or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/release')))
             inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              name: artifact
+              PathtoPublish: "$(Build.StagingDirectory)/artifact/"
               ArtifactName: artifact
-              
