@@ -22,8 +22,15 @@ stages:
         variables:
           solution: src
         steps:
+          - task: UseDotNet@2
+            displayName: Instalando o .NET 10
+            inputs:
+              version: '10.x'
+              packageType: sdk
+              installationPath: $(Agent.ToolsDirectory)/dotnet
+
           - task: DotNetCoreCLI@2
-            displayName: dotnet build
+            displayName: Compilando os pacotes a serem publicados
             inputs:
               projects: $(solution)
               arguments: '/p:Version=$(version) /p:PackageVersion=$(version)'
